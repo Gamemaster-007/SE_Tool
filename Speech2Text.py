@@ -25,7 +25,7 @@ while mode:
     with sr.Microphone() as source:
         r.adjust_for_ambient_noise(source)
         print("=>   Speak : ")
-        audio = r.listen(source)
+        audio = r.record(source, duration=5)
 
         try:
             text = r.recognize_google(audio)
@@ -42,4 +42,3 @@ while mode:
             
         except:
             print("=>   Try again")
-
