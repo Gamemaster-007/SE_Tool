@@ -12,7 +12,7 @@ from typing_text import typeText
 # else:
 #     print("This Tool will not work in this OS")
 #     exit()
-
+isF = True
 isListening = False
 
 friday = Tk()
