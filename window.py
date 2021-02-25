@@ -18,12 +18,12 @@ r = sr.Recognizer()
 isListening = False
 
 friday = Tk()
-friday.geometry('400x600')
-friday.resizable(width=False, height=False)
+friday.geometry('500x600')
+#friday.resizable(width=False, height=False)
 friday.title("F.R.I.D.A.Y")
 
 canvas_1 = Canvas(friday,background='black',height=510)
-canvas_2 = Canvas(friday,background='yellow',height=70)
+canvas_2 = Canvas(friday,background='white',height=70)
 
 messages = tkinter.Listbox(canvas_1,height=31,bg='black',fg='white')
 messages.pack(fill=BOTH)
