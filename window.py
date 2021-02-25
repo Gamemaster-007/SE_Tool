@@ -1,6 +1,6 @@
 from tkinter import *
 import tkinter
-import speech_recognition as sr
+from Speech2Text import speech2Text
 from typing_text import typeText
 
 # import platform
@@ -13,13 +13,11 @@ from typing_text import typeText
 #     print("This Tool will not work in this OS")
 #     exit()
 
-r = sr.Recognizer()
-
 isListening = False
 
 friday = Tk()
 friday.geometry('500x600')
-#friday.resizable(width=False, height=False)
+friday.resizable(width=False, height=False)
 friday.title("F.R.I.D.A.Y")
 
 canvas_1 = Canvas(friday,background='black',height=510)
@@ -32,51 +30,62 @@ msg_count = 1
 msg_fieldText = tkinter.StringVar()
 msg_fieldText.set('')
 
-msg_inputField = tkinter.Entry(canvas_2,font=('Helvetica','14'),width=36,textvariable=msg_fieldText)
+msg_inputField = tkinter.Entry(canvas_2,font=('Helvetica','14'),width=40,textvariable=msg_fieldText)
+
+def addMsg(msgr,type,msg):
+    global msg_count
+
+    messanger = {0:'F.R.I.D.A.Y  =>',1:'USER  =>'}
+    messanger_color = {0:'orange',1:'yellow'}
+    typE = {0:'white',1:'red'}
+    messages.insert(msg_count,messanger[msgr])
+    messages.itemconfig(msg_count-1,fg=messanger_color[msgr])
+    msg_count += 1
+    messages.insert(msg_count,"")
+    msg_count += 1
+    while len(msg) > 60:
+        messages.insert(msg_count,msg[:60])
+        messages.itemconfig(msg_count-1,fg=typE[type])
+        msg_count += 1
+        msg = msg[60:]
+                    
+    messages.insert(msg_count,msg)
+    messages.itemconfig(msg_count-1,fg=typE[type])
+    msg_count += 1
+    messages.insert(msg_count,"")
+    msg_count += 1
 
 def typing():
     global isListening
     isTyping = True
 
     while isTyping == True:
-        with sr.Microphone() as source:
-            r.adjust_for_ambient_noise(source)
-            # audio = r.listen(source)
-            audio = r.record(source,duration=5)
+        msg_fieldText.set('Mode: typing  | State: listening ')
+        friday.update()
 
-            try:
-                text = r.recognize_google(audio)
-                if text.lower() == 'stop typing':
-                    msg_fieldText.set('')
-                    isTyping = False
-                else:
-                    typeText(text)
-            except:
-                print("Try Again")
+        text = speech2Text()
+        msg_fieldText.set('Mode: typing  | State: processing ')
+        friday.update()
 
+        if text == -1:
+            msg_fieldText.set("Error: Didn't understand, Please try again ")
+            friday.update()
+            i = 0
+            for _ in range(50000000):
+                i += 1
+        else:
+            if text.lower() == 'stop typing':
+                msg_fieldText.set('')
+                isTyping = False
+            else:
+                typeText(text)
     
 def message_recieved(msg):
     global msg_count
     if msg.lower() == 'start typing':
-        msg_fieldText.set('Typing...')
-        friday.update()
         typing()
-
     else:
-        messages.insert(msg_count,'USER  =>')
-        messages.itemconfig(msg_count-1,fg='green')
-        msg_count += 1
-        messages.insert(msg_count,"")
-        msg_count += 1
-        while len(msg) > 60:
-            messages.insert(msg_count,msg[:60])
-            msg_count += 1
-            msg = msg[60:]
-                    
-        messages.insert(msg_count,msg)
-        msg_count += 1
-        messages.insert(msg_count,"")
-        msg_count += 1
+        addMsg(1,0,msg)
 
 def speak():
     global msg_count
@@ -85,38 +94,39 @@ def speak():
     if isListening == False:
         isListening = True
 
-        msg_fieldText.set('Listening...')
+        msg_fieldText.set('Listening in 2sec...')
         msg_inputField.config(state=DISABLED)
         friday.update()
 
-        with sr.Microphone() as source:
-            r.adjust_for_ambient_noise(source)
-            audio = r.record(source, duration=5)
+        msg = speech2Text()
+        if msg == -1:
+            error = "Didn't understand, Please Try Again"
+            addMsg(0,1,error)
+        else:
+            message_recieved(msg)
 
-            try:
-                msg = r.recognize_google(audio)
-                message_recieved(msg)
-                
-            except:
-                messages.delete(first=msg_count-1)
-                messages.insert(msg_count,'Try Again')
-                messages.itemconfig(msg_count-1,fg='red')
-                msg_count += 1
-                messages.insert(msg_count,"")
-                msg_count += 1
         msg_fieldText.set("")
         msg_inputField.config(state=NORMAL)
         isListening = False
 
-
 def send():
     global msg_count
     global isListening
+    msg = msg_fieldText.get()
+    words = msg.split(' ')
+    i = 0
+    while i < len(words):
+        if words[i] == '':
+            words.remove(words[i])
+            i -= 1
+        i += 1
+    msg = ' '.join(words)
 
-    if isListening == False:
-        msg = msg_fieldText.get()
+    if isListening == False and len(msg) != 0:
+        msg_inputField.config(state=DISABLED)
         message_recieved(msg)
-        msg_fieldText.set('')
+        msg_fieldText.set("")
+        msg_inputField.config(state=NORMAL)
 
 photo = PhotoImage(file = "microphone.png")
 mic_button = tkinter.Button(canvas_2,text='Speak',height=70,padx=10,image=photo,command=speak)
