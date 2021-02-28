@@ -2,6 +2,7 @@ from tkinter import *
 import tkinter
 from Speech2Text import speech2Text
 from typing_text import typeText
+# from codeDictation import startCode
 
 # import platform
 # Platform = platform.system()
@@ -12,30 +13,28 @@ from typing_text import typeText
 # else:
 #     print("This Tool will not work in this OS")
 #     exit()
-<<<<<<< Updated upstream
-isF = True
-=======
-isK=False
->>>>>>> Stashed changes
-isListening = False
 
+isListening = False # Flag variable to check state of Tool
+
+# Tkinter Window Specifications
 friday = Tk()
 friday.geometry('500x600')
 friday.resizable(width=False, height=False)
 friday.title("F.R.I.D.A.Y")
-
 canvas_1 = Canvas(friday,background='black',height=510)
 canvas_2 = Canvas(friday,background='white',height=70)
 
+# List of messages
 messages = tkinter.Listbox(canvas_1,height=31,bg='black',fg='white')
 messages.pack(fill=BOTH)
 msg_count = 1
 
+# Input Field
 msg_fieldText = tkinter.StringVar()
 msg_fieldText.set('')
-
 msg_inputField = tkinter.Entry(canvas_2,font=('Helvetica','14'),width=40,textvariable=msg_fieldText)
 
+    # +++++++++++++++++++++++++ Add Message to Tkinter window ++++++++++++++++++++++++++++++++++++++++++++++
 def addMsg(msgr,type,msg):
     global msg_count
 
@@ -47,7 +46,7 @@ def addMsg(msgr,type,msg):
     msg_count += 1
     messages.insert(msg_count,"")
     msg_count += 1
-    while len(msg) > 60:
+    while len(msg) > 60: # Divide message to fit in window
         messages.insert(msg_count,msg[:60])
         messages.itemconfig(msg_count-1,fg=typE[type])
         msg_count += 1
@@ -59,50 +58,57 @@ def addMsg(msgr,type,msg):
     messages.insert(msg_count,"")
     msg_count += 1
 
+    # +++++++++++++++++++++++++ Typing System ++++++++++++++++++++++++++++++++++++++++++++++
 def typing():
     global isListening
     isTyping = True
 
     while isTyping == True:
-        msg_fieldText.set('Mode: typing  | State: listening ')
+        msg_fieldText.set('Mode: typing  | State: listening ') # Set mode and state
         friday.update()
 
-        text = speech2Text()
-        msg_fieldText.set('Mode: typing  | State: processing ')
+        text = speech2Text() # Get text from Speech Detection module
+        msg_fieldText.set('Mode: typing  | State: processing ') # Set mode and state
         friday.update()
 
-        if text == -1:
+        if text == -1: # if text not detected
             msg_fieldText.set("Error: Didn't understand, Please try again ")
             friday.update()
             i = 0
             for _ in range(50000000):
                 i += 1
-        else:
-            if text.lower() == 'stop typing':
+        else: # if text detected
+            if text.lower() == 'stop typing': # Exit Typing mode
                 msg_fieldText.set('')
                 isTyping = False
             else:
-                typeText(text)
-    
+                typeText(text) # Type text using typeText module
+
+    # +++++++++++++++++++++++++ Detecting Message Type ++++++++++++++++++++++++++++++++++++++++++++++
 def message_recieved(msg):
     global msg_count
     if msg.lower() == 'start typing':
         typing()
+    elif msg.lower() == 'start coding':
+        message = 'Started Coding'
+        addMsg(0,0,message)
+        # startCode()
     else:
         addMsg(1,0,msg)
 
+    # +++++++++++++++++++++++++ Mic button Action ++++++++++++++++++++++++++++++++++++++++++++++
 def speak():
     global msg_count
     global isListening
 
-    if isListening == False:
-        isListening = True
+    if isListening == False: # check state
+        isListening = True # change state
 
         msg_fieldText.set('Listening in 2sec...')
         msg_inputField.config(state=DISABLED)
         friday.update()
 
-        msg = speech2Text()
+        msg = speech2Text() # Get message from speech detection module
         if msg == -1:
             error = "Didn't understand, Please Try Again"
             addMsg(0,1,error)
@@ -113,10 +119,14 @@ def speak():
         msg_inputField.config(state=NORMAL)
         isListening = False
 
+    # +++++++++++++++++++++++++ Send Button Action ++++++++++++++++++++++++++++++++++++++++++++++
 def send():
     global msg_count
     global isListening
-    msg = msg_fieldText.get()
+
+    msg = msg_fieldText.get() # Get message from Input Field
+
+    # Check if message is empty spaces
     words = msg.split(' ')
     i = 0
     while i < len(words):
@@ -132,16 +142,20 @@ def send():
         msg_fieldText.set("")
         msg_inputField.config(state=NORMAL)
 
+# Mic button UI
 photo = PhotoImage(file = "microphone.png")
 mic_button = tkinter.Button(canvas_2,text='Speak',height=70,padx=10,image=photo,command=speak)
+mic_button.image = photo
 mic_button.pack(side=LEFT)
 msg_inputField.pack(side=LEFT,fill=BOTH)
 
+# Send Button UI
 send_photo = PhotoImage(file = "send.png")
 send_button = tkinter.Button(canvas_2,text='Speak',height=70,padx=10,image=send_photo,command=send)
+send_button.image = send_photo
 send_button.pack(side=RIGHT)
 
+# Window UI
 canvas_1.pack(side=TOP,fill=BOTH)
 canvas_2.pack(side=BOTTOM,fill=BOTH)
-
 friday.mainloop()
