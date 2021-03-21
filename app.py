@@ -2,15 +2,18 @@
 import sys
 import tkinter
 import playsound
+import time
 from tkinter import *
 from tkinter import font as tkfont
 from Speech2Text import speech2Text
 from typing_text import typeText
-from codeDictation import dictatingCode
+from codeThread import CodeThread
 from dictateText import dictate
 from tkinter import ttk
 from Editor_Tools import scrollingtext,ColorLight
-import multiprocessing
+import tkinter.filedialog as tkFileDialog
+
+ExtType=[('.py (With Console)', '*.py')]
 
 # Main App Class
 class App(tkinter.Tk):
@@ -18,7 +21,7 @@ class App(tkinter.Tk):
 
         # Creating Main Window
         tkinter.Tk.__init__(self, *args, **kwargs)
-        self.attributes("-topmost",True)
+        # self.attributes("-topmost",True)
 
         # Modify Title of Window
         self.title("F.R.I.D.A.Y")
@@ -30,6 +33,10 @@ class App(tkinter.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
+        self.toolinfo = ''
+        self.textbox = ''
+        self.trigger_function = ''
+
         # Creating Frames
         self.frames = {}
         for F in (Assistant, TextEditor):
@@ -38,45 +45,27 @@ class App(tkinter.Tk):
             self.frames[page_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.isProcessStarted = False # To Check if Second Process has Started
-
+        self.codethread = CodeThread(self.toolinfo,0,self.textbox,self.trigger_function)
+        self.codethread.start()
+        
         self.show_frame("Assistant") # Initially Show Assistant Frame
         self.update() # Update Window GUI
         # dictate('This is FRIDAY, your personal voice assistant. My special feature is to code when you dictate.') # Dictate Start Message
-
-    # [ Function to Pause Process ]
-    def pause_Process(self):
-        if self.isProcessStarted:
-            self.dictationProcess.terminate() # Terminate Process
-            self.isProcessStarted = False
-
-    # [ Function to Resume Process ]
-    def resume_Process(self):
-        print('starting Process')
-        if self.isProcessStarted == False:
-            self.dictationProcess = multiprocessing.Process(target=dictatingCode,daemon=True) # Create New Process
-            self.dictationProcess.start() # Start Process
-            self.isProcessStarted = True
 
     # Function to Switch between Frames
     def show_frame(self, page_name):
 
         if page_name == 'Assistant':
-            if self.isProcessStarted:
-                self.dictationProcess.terminate() # Terminate Process
-                self.isProcessStarted = False
+            self.codethread.pause()
             # Resize the Window
             self.minsize(500,600)
-            self.geometry('500x600+350+10')
+            self.geometry('500x600')
             self.resizable(width=False, height=False)
         else:
             # Resize Window
             self.resizable(width=True, height=True)
             self.minsize(1000,600)
-            self.geometry('1000x600+350+10')
-            self.dictationProcess = multiprocessing.Process(target=dictatingCode,daemon=True) # Create New Process
-            self.dictationProcess.start() # Start Process
-            self.isProcessStarted = True
+            self.codethread.resume()
             self.lift()
             self.update()
         frame = self.frames[page_name] # Select Desired Frame
@@ -166,9 +155,7 @@ class Assistant(tkinter.Frame):
             if text == -1: # if text not detected
                 self.msg_fieldText.set("Error: Didn't understand, Please try again ")
                 self.update()
-                i = 0
-                for _ in range(50000000):
-                    i += 1
+                time.sleep(2)
             else: # if text detected
                 if text.lower() == 'stop typing': # Exit Typing mode
                     self.msg_fieldText.set('')
@@ -177,6 +164,7 @@ class Assistant(tkinter.Frame):
                     isTyping = False
                 else:
                     typeText(text) # Type text using typeText module
+
 
     # Opening Text Editor
     def openEditor(self):
@@ -270,6 +258,9 @@ class TextEditor(tkinter.Frame):
         self.text_box.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
         self.text_box.pack()
 
+        self.controller.textbox = self.text_box
+        self.controller.trigger_function = self.trigger
+
         # Adding Features On Text Box
         self.box=scrollingtext.featured_text(root=frame1, textbox=self.text_box, main=frame)
 
@@ -277,6 +268,9 @@ class TextEditor(tkinter.Frame):
         # Function For Scrolling Text widget number line Together
         self.cursurinfo=ttk.Label(self.text_box, text='Line 1 | Column 1',padding=3)
         self.cursurinfo.pack(expand='no', fill=None, side='right',anchor='se')
+
+        self.controller.toolinfo=ttk.Label(self.text_box, text='State: - - - ',padding=3)
+        self.controller.toolinfo.pack(expand='no', fill=None, side='left',anchor='se')
 
         self.micState = True # Check mic State
 
@@ -303,16 +297,26 @@ class TextEditor(tkinter.Frame):
         if self.micState:
             self.pauseResumeButton.configure(text='Resume')
             self.update()
-            self.controller.pause_Process()
+            self.controller.codethread.pause()
             self.micState = False
         else:
             self.pauseResumeButton.configure(text='Pause')
             self.update()
-            self.controller.resume_Process()
+            self.controller.codethread.resume()
             self.micState = True
+
+    def Save_as(self):
+        ExtType=[('.py (With Console)', '*.py')]
+        path=tkFileDialog.asksaveasfile(title='Save As', defaultextension='*.py',filetypes=ExtType)
+        storeobj=self.text_box.get('1.0', END)
+        if path:
+            filetmp=open(path.name,'a')
+            filetmp.write(storeobj)
+            filetmp.close()
 
     # [ Function to exit Coding State ]
     def stopCoding(self):
+        self.Save_as()
         self.controller.show_frame('Assistant') # Change Frame to Assiatant Frame
         self.update() # Update Window GUI
         dictate('Done Coding')
@@ -325,7 +329,7 @@ class TextEditor(tkinter.Frame):
         self.cursurinfo.configure(text=infotext)
 
     # All-Key Trigger
-    def trigger(self, event):
+    def trigger(self, event=None):
         self.box.changed()
         self.update_cursor_info_bar()
         self.syntax_color.trigger()
