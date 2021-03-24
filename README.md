@@ -1,6 +1,6 @@
 # SE_Tool
 
-## INSTALLING
+## Installing
 ```
 git clone https://github.com/Gamemaster-007/SE_Tool
 cd SE_Tool
@@ -13,7 +13,7 @@ cd SE_Tool
 python app.py
 ```
 
-## COMMANDS
+## Commands
 
 -   creating function           -  create/write/define function (or) create/write/define a function
 -   creating function with name - { creating function } + named + {name} (or) { creating function } + name
