@@ -277,7 +277,7 @@ def general_command(words):
     global trigger_function
 
     x = words[0]
-    if x == 'and' or x == 'then': # skip if you get and or then
+    if x == 'then': # skip if you get then
         return 1
     elif x == 'clear': # clear text till any operator
         if pos[1] > 0:
