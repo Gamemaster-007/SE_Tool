@@ -49,7 +49,7 @@ class App(tkinter.Tk):
         
         self.show_frame("Assistant") # Initially Show Assistant Frame
         self.update() # Update Window GUI
-        # dictate('This is FRIDAY, your personal voice assistant.') # Dictate Start Message
+        dictate('This is FRIDAY, your personal voice assistant.') # Dictate Start Message
 
     # Function to Switch between Frames
     def show_frame(self, page_name):
