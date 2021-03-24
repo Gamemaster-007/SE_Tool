@@ -1,8 +1,10 @@
+# Import Required Libraries and Functions
 from Speech2Text import speech2Text
 from code import type_code
 import threading
 import time
 
+# +++++++++++++++++++++++++ Code Thread ++++++++++++++++++++++++++++++++++++++++++++++
 class CodeThread(threading.Thread):
     def __init__(self,toolinfo,flag,text_box,trigger_function):
         threading.Thread.__init__(self)
@@ -15,6 +17,7 @@ class CodeThread(threading.Thread):
         self.text_box = text_box
         self.trigger_function = trigger_function
 
+    # [ Function to start the thread ]
     def run(self):
         while True:
             with self.pause_cond:
@@ -30,6 +33,7 @@ class CodeThread(threading.Thread):
                     else:
                         type_code(self.text_box,self.trigger_function,text)
 
+    # [ Function to pause the Thread ]
     def pause(self):
         if self.flag == 1:
             self.toolinfo.configure(text="State: - - -")
@@ -37,7 +41,7 @@ class CodeThread(threading.Thread):
         self.paused = True
         self.pause_cond.acquire()
 
-    #should just resume the thread
+    # [ Function to resume the Thread ]
     def resume(self):
         self.paused = False
         # Notify so thread will wake after lock released
@@ -46,5 +50,6 @@ class CodeThread(threading.Thread):
         self.pause_cond.release()
         self.flag = 1
 
+# This is Just a Thread and doesn't work on itself
 if __name__=='__main__':
     print("This Process doesn't run on its own.")

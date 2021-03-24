@@ -13,8 +13,6 @@ from tkinter import ttk
 from Editor_Tools import scrollingtext,ColorLight
 import tkinter.filedialog as tkFileDialog
 
-ExtType=[('.py (With Console)', '*.py')]
-
 # Main App Class
 class App(tkinter.Tk):
     def __init__(self, *args, **kwargs):
@@ -33,6 +31,7 @@ class App(tkinter.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
+        # Define dummy variables and assign them when created
         self.toolinfo = ''
         self.textbox = ''
         self.trigger_function = ''
@@ -45,27 +44,27 @@ class App(tkinter.Tk):
             self.frames[page_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.codethread = CodeThread(self.toolinfo,0,self.textbox,self.trigger_function)
-        self.codethread.start()
+        self.codethread = CodeThread(self.toolinfo,0,self.textbox,self.trigger_function) # Create coding Thread
+        self.codethread.start() # Start the Thread
         
         self.show_frame("Assistant") # Initially Show Assistant Frame
         self.update() # Update Window GUI
-        # dictate('This is FRIDAY, your personal voice assistant. My special feature is to code when you dictate.') # Dictate Start Message
+        # dictate('This is FRIDAY, your personal voice assistant.') # Dictate Start Message
 
     # Function to Switch between Frames
     def show_frame(self, page_name):
 
         if page_name == 'Assistant':
-            self.codethread.pause()
+            self.codethread.pause() # Pause ths thread when exited coding mode
             # Resize the Window
-            self.minsize(500,600)
-            self.geometry('500x600')
+            self.minsize(520,600)
+            self.geometry('520x600')
             self.resizable(width=False, height=False)
         else:
             # Resize Window
             self.resizable(width=True, height=True)
             self.minsize(1000,600)
-            self.codethread.resume()
+            self.codethread.resume() # resume the thread again when started coding
             self.lift()
             self.update()
         frame = self.frames[page_name] # Select Desired Frame
@@ -190,6 +189,7 @@ class Assistant(tkinter.Frame):
             sys.exit()
         else:
             self.addMsg(1,0,msg)
+            self.addMsg(0,0,"Sorry, I don't have permission to do that yet. But may expect in R2")
 
     # Function to Detect Speech
     def speak(self):
@@ -258,6 +258,7 @@ class TextEditor(tkinter.Frame):
         self.text_box.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
         self.text_box.pack()
 
+        # Assign the dummy variables
         self.controller.textbox = self.text_box
         self.controller.trigger_function = self.trigger
 
@@ -305,8 +306,9 @@ class TextEditor(tkinter.Frame):
             self.controller.codethread.resume()
             self.micState = True
 
+    # [ Function to save textbox text as a python file ]
     def Save_as(self):
-        ExtType=[('.py (With Console)', '*.py')]
+        ExtType=[('.py', '*.py')]
         path=tkFileDialog.asksaveasfile(title='Save As', defaultextension='*.py',filetypes=ExtType)
         storeobj=self.text_box.get('1.0', END)
         if path:
@@ -316,10 +318,10 @@ class TextEditor(tkinter.Frame):
 
     # [ Function to exit Coding State ]
     def stopCoding(self):
-        self.Save_as()
+        self.Save_as() # Save the text as python file
+        dictate('Done Coding')
         self.controller.show_frame('Assistant') # Change Frame to Assiatant Frame
         self.update() # Update Window GUI
-        dictate('Done Coding')
 
     # [Function to Update Cursor Position]
     def update_cursor_info_bar(self, event=None):

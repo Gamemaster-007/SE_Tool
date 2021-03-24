@@ -3,12 +3,6 @@ import keyboard
 
 str_num = {'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,'ten':10}
 
-# command  =  0 - enter
-#             1 - clear letters
-#             2 - clear words
-#             3 - clear lines
-#             4 - clear all
-
 def typeText(text):
 
     command = -1

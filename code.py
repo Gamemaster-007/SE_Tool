@@ -1,26 +1,30 @@
+# Import Required Libraries and Functions
 import tkinter as tk
 
-text_box = ''
-trigger_function = ''
-c = ''
-pos = [0,0]
-num_words={'zero':0,'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9}
-operators=['+','-','*','/','%','>','<','=','&','|','^','!','~',' ']
+text_box = '' # Dummy variable for textbox in Editor
+trigger_function = '' # Dummy variable for change trigger function
+pos = [0,0] # To maintain tk.INSERT position
+num_words={'zero':0,'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9} # to convert numbers 
+operators=['+','-','*','/','%','>','<','=','&','|','^','!','~',' ','(',')','{','}','[',']',"'",'"','!'] # All operators from python
+# All conversions made while preprocessing text command
 conversions = {'Pk inter':'tKinter','Pkinter':'tKinter','Pk inter':'tKinter','Pk inter':'tKinter','closed braket':')','Pk inter':'tKinter','dot':'.','full stop':'.','Pk inter':'tKinter','apostrophe mark':'"',
-'double quotes':'"','cross':'X','star':'*','times':'*','kama':',','coma':',','under score':'_','space':' ','colam':':','kolam':':', 'greater than equal to':'>=','greater than or equal to':'>=',
+'double quotes':'"','cross':'X','not equal to':'!=','not equals to':'!=','star':'*','times':'*','kama':',','coma':',','under score':'_','space':' ','colam':':','kolam':':', 'greater than equal to':'>=','greater than or equal to':'>=',
 'less than equal to':'<=','less than or equal to':'<=','less than':'<','plus':'+','minus':'-','addition':'+', 'divided by':'/',  'multiplication':'*', 'multiplied to':'*',  'percentage':'%',
 'open square bracket':'[','open square brackets':'[', 'open square (':'[', 'closed square bracket':']','closed square brackets':']', 'closed square (':']','open flower bracket':'{',
 'open flower brackets':'{', 'open flower (':'{','closed flower bracket':'}','closed flower brackets':'}',  'closed flower (':'}', 
-'power':'^', 'into':'*','percentile':'%','greater than':'>', 'less than':'<','equals to':'=','equal to':'=','double equals to':'==','double equal to':'==','by':'/'}
+'power':'^', 'into':'*','percentile':'%','greater than':'>', 'less than':'<','equals to':'=','equal to':'=','double equals to':'==',
+'double equal to':'==','by':'/','colin':':','collin':':','false':'False','true':'True','length':'len',
+'zero':0,'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9}
 
-
+# +++++++++++++ [ Function to Move tk.INSERT position ] +++++++++++++
 def move_cursor(pos):
     global text_box
     global trigger_function
 
-    text_box.mark_set("insert", "%d.%d" % (pos[0]+1,pos[1]))
+    text_box.mark_set("insert", "%d.%d" % (pos[0]+1,pos[1])) # change position
     trigger_function()
 
+# +++++++++++++ [ Function to insert text in TextBox ] +++++++++++++
 def insert_text(text,position):
     global text_box
     global trigger_function
@@ -28,7 +32,7 @@ def insert_text(text,position):
     text_box.mark_set("insert", "%d.%d" % (position[0]+1,position[1]))
     trigger_function()
     flag = 0
-    if text[0] == '\n':
+    if text[0] == '\n': # change line and cursor position in case of new line
         text_box.insert("%d.%d" % (position[0]+1,position[1]),text[0])
         trigger_function()
         ix = 0
@@ -39,6 +43,7 @@ def insert_text(text,position):
         flag = 1
     move_cursor(position)
 
+    # Inserting text => character by character
     for i in range(flag,len(text)):
         text_box.insert(tk.INSERT,text[i])
         trigger_function()
@@ -48,10 +53,11 @@ def insert_text(text,position):
         for _ in range(1000000):
             ix += 1
 
+# +++++++++++++ [ Function to check the type of command ] +++++++++++++
 def check(words):
-    if (len(words) > 2) and ((words[0] == 'create' and words[1] == 'a' and words[2] == 'function') or (words[0] == 'write' and words[1] == 'a' and words[2] == 'function')):
+    if (len(words) > 2) and (((words[0] == 'create' or words[0] == 'define') and words[1] == 'a' and words[2] == 'function') or (words[0] == 'write' and words[1] == 'a' and words[2] == 'function')):
         return 0
-    elif (len(words) > 1) and ((words[0] == 'create' and words[1] == 'function') or (words[0] == 'write function' and words[1] == 'function')):
+    elif (len(words) > 1) and (((words[0] == 'create' or words[0] == 'define') and words[1] == 'function') or (words[0] == 'write' and words[1] == 'function')):
         return 1
     elif len(words) > 3 and words[0] == 'go' and words[1] == 'to' and words[2] == 'next' and words[3] == 'line':
         return 3
@@ -81,9 +87,12 @@ def check(words):
         return 15
     elif len(words) > 5 and words[0] == 'clear' and words[1] == 'lines' and words[2] == 'from' and (words[4] == 'to' or words[4] == 'two'):
         return 16
+    elif len(words) > 2 and words[0] == 'go' and words[1] == 'to' and words[2] == 'line':
+        return 17
     else:
         return -1
 
+# +++++++++++++ [ Function to write function syntax ] +++++++++++++
 def write_function(fun_name,pos_ind):
     global text_box
     global pos
@@ -103,16 +112,17 @@ def write_function(fun_name,pos_ind):
         pos = [pos[0],(5+pos_ind)]
         move_cursor(pos)
 
+# +++++++++++++ [ Executed when user wishes to define a function ] +++++++++++++
 def got_function(words):
     if len(words) > 1:
         fun_name = ''
         flag = 0
 
         if words[0] == 'named':
-            fun_name = words[1]
+            fun_name = ''.join(words[1:])# words[1]
             flag = 1
         else:
-            fun_name = words[0]
+            fun_name = ''.join(words) # words[0]
             flag = 0
 
         write_function(fun_name,len(fun_name))
@@ -125,15 +135,16 @@ def got_function(words):
     write_function('',-1)
     return []
 
+# +++++++++++++ [ comment multiple lines ] +++++++++++++
 def multi_comment(num_1,num_2):
     global pos
 
     lines = text_box.get('1.0','end').split('\n')
     if num_1 > num_2:
-        if num_2 > 0 and num_1 <= len(lines):
+        if num_2 > 0 and num_1 <= len(lines): # comment only if the line numbers are correct
             for i in range(num_2,num_1+1):
                 insert_text('#',[i-1,0])
-            if pos[0] > num_2 and pos[0] < num_1:
+            if pos[0] > num_2 and pos[0] < num_1: # change position of cursor if that line is commented
                 pos = [pos[0],pos[1]+1]
             move_cursor(pos)
     else:
@@ -144,6 +155,7 @@ def multi_comment(num_1,num_2):
                 pos = [pos[0],pos[1]+1]
             move_cursor(pos)
 
+# +++++++++++++ [ comment single line ] +++++++++++++
 def comment_line(num):
     global pos
     global text_box
@@ -155,6 +167,7 @@ def comment_line(num):
             pos[1] += 1
         move_cursor(pos)
 
+# +++++++++++++ [ uncomment multiple lines ] +++++++++++++
 def multi_uncomment(num_1,num_2):
     global pos
     global text_box
@@ -167,7 +180,7 @@ def multi_uncomment(num_1,num_2):
                 if lines[i-1][0] == '#':
                     start_pos = str(i)+'.0'
                     end_pos = str(i)+'.1'
-                    text_box.delete(start_pos,end_pos)
+                    text_box.delete(start_pos,end_pos) # to delete text from TextBox
                     trigger_function()
             if pos[0] > num_2 and pos[0] < num_1:
                 pos = [pos[0],pos[1]-1]
@@ -184,6 +197,7 @@ def multi_uncomment(num_1,num_2):
                 pos = [pos[0],pos[1]-1]
             move_cursor(pos)
 
+# +++++++++++++ [ uncomment single line ] +++++++++++++
 def uncomment_line(num):
     global text_box
     global trigger_function
@@ -199,6 +213,7 @@ def uncomment_line(num):
             pos[1] -= 1
         move_cursor(pos)
 
+# +++++++++++++ [ deleting lines from code ] +++++++++++++
 def clear_lines(num_1,num_2):
     global pos
     global text_box
@@ -238,6 +253,7 @@ def clear_lines(num_1,num_2):
                 text_box.delete(start_pos,end_pos)
                 trigger_function()
 
+# +++++++++++++ [ Function to find if Tab is required in a new line ] +++++++++++++
 def isTabReq(line):
     if len(line) >= 5:
         if line[:5] == 'while':
@@ -253,6 +269,7 @@ def isTabReq(line):
             return 1
     return 0
 
+# +++++++++++++ [ Function to write command to TextBox ] +++++++++++++
 def general_command(words):
     global text_box
     global pos
@@ -260,15 +277,15 @@ def general_command(words):
     global trigger_function
 
     x = words[0]
-    if x == 'and' or x == 'then':
+    if x == 'and' or x == 'then': # skip if you get and or then
         return 1
-    elif x == 'clear':
+    elif x == 'clear': # clear text till any operator
         if pos[1] > 0:
             lines = text_box.get('1.0','end').split('\n')
             ini_pos = pos[1]
             pos[1] -= 1
             while pos[1] > 0:
-                if lines[pos[0]][pos[1]] not in operators:
+                if lines[pos[0]][pos[1]-1] not in operators:
                     pos[1] -= 1
                 else:
                     break
@@ -279,70 +296,72 @@ def general_command(words):
             trigger_function()
         return 1
 
-    elif x == 'top':
+    elif x == 'top': # move cursor position to start of code
         pos = [0,0]
         move_cursor(pos)
         return 1
-    elif x == 'bottom':
+    elif x == 'bottom': # move cursor to end of line
         lines = text_box.get('1.0','end').split('\n')
         pos = [len(lines)-1,len(lines[-1])]
         move_cursor(pos)
         return 1
-    elif x == 'start':
+    elif x == 'start': # move cursor to start of line
         pos = [pos[0],0]
         move_cursor(pos)
         return 1
-    elif x == 'end':
+    elif x == 'end': # move cursor to end of line
         lines = text_box.get('1.0','end').split('\n')
         pos = [pos[0],len(lines[pos[0]])]
         move_cursor(pos)
         return 1
-    elif x == 'next':
+    elif x == 'right': # move cursor one step forward
         lines = text_box.get('1.0','end').split('\n')
         if pos[1] != len(lines[pos[0]]):
             pos = [pos[0],pos[1]+1]
             move_cursor(pos)
         return 1
-    elif x == 'back':
+    elif x == 'left': # move cursor one step backwards
         lines = text_box.get('1.0','end').split('\n')
         if pos[1] != 0:
             pos = [pos[0],pos[1]-1]
             move_cursor(pos)
         return 1
-    elif x == 'tab':
+    elif x == 'tab': # add Tab
         lines = text_box.get('1.0','end').split('\n')
         insert_text('    ',pos)
         return 1
-    elif x == 'space':
+    elif x == 'next': # add space (' ')
         lines = text_box.get('1.0','end').split('\n')
         insert_text(' ',pos)
         return 1
-    elif x == 'string':
+    elif x == 'string': # to define a string
         lines = text_box.get('1.0','end').split('\n')
         insert_text('""',pos)
         pos = [pos[0],pos[1]-1]
         move_cursor(pos)
         return 1
-    elif x == 'print':
+    elif x == 'print': # to print something
         lines = text_box.get('1.0','end').split('\n')
         insert_text('print()',pos)
         pos = [pos[0],pos[1]-1]
         move_cursor(pos)
         return 1
-    elif x == 'of' or x == 'off':
+    elif x == 'of' or x == 'off': # to create brackets and write something in between '(|)'
         lines = text_box.get('1.0','end').split('\n')
         insert_text('()',pos)
         pos = [pos[0],pos[1]-1]
         move_cursor(pos)
         return 1
-    else:
+    else: # to write the recieved text
         lines = text_box.get('1.0','end').split('\n')
-        if x[-1] in operators:
+        # Insert space at the end of text if last character is not an operator
+        if x[-1] in operators or len(x) == 1 :
             insert_text(x,pos)
         else:
             insert_text(x+' ',pos)
         return 1
 
+# +++++++++++++ [ Function to find the command and execute respective operations ] +++++++++++++
 def decide(inp):
     global text_box
     global trigger_function
@@ -450,7 +469,7 @@ def decide(inp):
                 temp = general_command(words)
                 decide(' '.join(words[temp:]))
         elif k == 9:
-            comment_line(pos[0])
+            comment_line(pos[0]+1)
             decide(' '.join(words[3:]))
         elif k == 10:
             try:
@@ -484,7 +503,7 @@ def decide(inp):
                 temp = general_command(words)
                 decide(' '.join(words[temp:]))
         elif k == 12:
-            uncomment_line(pos[0])
+            uncomment_line(pos[0]+1)
             decide(' '.join(words[3:]))
         elif k == 13:
             try:
@@ -550,23 +569,42 @@ def decide(inp):
             except:
                 temp = general_command(words)
                 decide(' '.join(words[temp:]))
+        elif k == 17:
+            try:
+                num = 0
+                if words[3] in num_words:
+                    num = num_words[words[3]]
+                elif words[3] == 'to':
+                    num = 2
+                else:
+                    num = int(words[3])
+                lines = text_box.get('1.0','end').split('\n')
+                pos = [num-1,len(lines[num-1])]
+                move_cursor(pos)
+            except:
+                temp = general_command(words)
+                decide(' '.join(words[temp:]))
         else:
             temp = general_command(words)
             decide(' '.join(words[temp:]))
 
+# +++++++++++++ [ Function to code using text recieved ] +++++++++++++
 def type_code(textbox, triggerFunction,command):
     global text_box
     global trigger_function
     global pos
     global conversions
 
+    # assign dummy variable
     text_box = textbox
     trigger_function = triggerFunction
-    x,y = text_box.index(tk.INSERT).split('.')
+    x,y = text_box.index(tk.INSERT).split('.') # get current possition of cursor
     pos = [int(x)-1,int(y)]
 
+    command = command.lower()
+    # Preprocessing recieved text
     for x,y in conversions.items():
-        if x in command:
+        if x in command and type(x) == str:
             command=command.replace(x,conversions[x])
 
     decide(command)

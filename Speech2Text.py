@@ -8,8 +8,10 @@ r = sr.Recognizer()
 def speech2Text():
     with sr.Microphone() as source:
         r.adjust_for_ambient_noise(source) # Adjust Microphne to noise in surroundings
-        audio = r.record(source, duration=5) # Record Audio
-        # audio = r.listen(source)
+        # Record Audio
+        audio = r.record(source, duration=3) # use this line if surroundings noise is high or if microphone takes very long time to process speech
+        # Listen to microphone
+        # audio = r.listen(source) # use this line if surroundings noise is low and microphone is taking reasonable amount of time to process text
         try:
             text = r.recognize_google(audio) # Convert Audio to Text
             return text
