@@ -1,0 +1,45 @@
+   
+rg iTerm2 Shell Edit View Session Scripts Profiles Toolbelt Window Help © Q S&S A ThutApr 12:20 PM
+python navigation/input.py
+Spotify -
+Web Player x
+Pn) MakeTreeDir -
+PyPI Writing to a File with Python’ x oo
+261 rows
+x 6 columns ] ]
+igation/input.
+Ay S
+@ @ @ Wanna iano) Ann OL am Oy
+tion/input
+ 
+   
+     
+ 
+ 
+       
+     
+   
+@ stackabuse.com
+For example, if we wanted to print directly to a file without changing the entire script's
+would write:
+import sys :
+a eRomnne er
+cNennele
+-py",
+line 1, in <module>
+print('This message will be displayed on the screen.') import
+ImportError: No module named c
+with open('filename.txt', 'w') as f:
+print('This message will be written to a file.', file=f) a
+,
+,
+dictateText.py
+As we did not fiddle with redirecting the standard output explicitly, we no longer have to reset it to
+its initial value. As a result, this is the preferred way to write to a file with the function.
+Note: Although the parameter's name is ,
+remember that it works with any file-like object. If PCAC ea
+ation/input
+  you wanted to print to ,
+for example, you would change the statement to:
+   
+  Waiting for |h3.googleusercontent.com...
