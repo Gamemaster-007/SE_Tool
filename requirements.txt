@@ -195,5 +195,5 @@ traitlets==5.0.5
 typing-extensions==3.7.4.3
 typing-inspect==0.6.0
 uritemplate==3.0.1
-urllib3==1.26.3
+urllib3==1.26.4
 wcwidth==0.2.5
