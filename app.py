@@ -4,6 +4,7 @@ import tkinter
 import playsound
 import time
 from tkinter import *
+from tkinter.ttk import *
 from tkinter import font as tkfont
 from Speech2Text import speech2Text
 from typing_text import typeText
@@ -12,6 +13,10 @@ from dictateText import dictate
 from tkinter import ttk
 from Editor_Tools import scrollingtext,ColorLight
 import tkinter.filedialog as tkFileDialog
+import pyperclip
+from tkhtmlview import HTMLLabel
+from get_codes import search_web
+import threading
 
 # Main App Class
 class App(tkinter.Tk):
@@ -62,8 +67,7 @@ class App(tkinter.Tk):
             self.resizable(width=False, height=False)
         else:
             # Resize Window
-            self.resizable(width=True, height=True)
-            self.minsize(1000,600)
+            self.minsize(1360,600)
             self.codethread.resume() # resume the thread again when started coding
             self.lift()
             self.update()
@@ -232,25 +236,50 @@ class Assistant(tkinter.Frame):
             self.msg_fieldText.set("")
             self.msg_inputField.config(state=NORMAL)
 
+class Section(Frame):
+    def __init__(self,parent,snippet,source,link):
+        Frame.__init__(self,parent)
+        self.html_code = f"""
+                <h5> Source : <b style="color:red"> {source} </b> </h5>
+                <a href="{link}">original code link</a>
+        """
+        self.source = HTMLLabel(self,html=self.html_code,height=5,background='white')
+        self.source.pack(side='top')
+        self.snippet = snippet
+
+        self.code = Text(self, wrap='none', undo=1,background='black',fg='white',height=10)
+        self.code.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
+        self.code.pack(side='top')
+        self.code.insert(END,snippet)
+        self.code.config(state=DISABLED)
+
+        self.code_syntax_color=ColorLight.ColorLight(txtbox=self.code)
+        self.code_syntax_color.trigger()
+
+        self.copy = Button(self,text='COPY',command=self.pr)
+        self.copy.pack(side='top')
+    
+    def pr(self):
+        pyperclip.copy(self.snippet)
+
 # Text Editor Class
 class TextEditor(tkinter.Frame):
     def __init__(self,parent,controller):
-        global sps
 
         # Creating Frame
         tkinter.Frame.__init__(self,parent)
         self.controller = controller
-        
-        self.filepath=tkinter.StringVar() # For File Name
-        self.filepath.set('Unitled.py') # Blank File Name
 
         # [Shortcut Bar Main Frame]
         self.shortcut_bar=ttk.Frame(self)
         self.shortcut_bar.pack(expand='no', fill='x')
 
+        self.left = tkinter.Frame(self)
+        self.left.pack(side='left',fill='both',expand='no')
+
         # +++++++++++++++++++++++++ Text Box System ++++++++++++++++++++++++++++++++++++++++++++++
         # Frame For [Text Box]
-        frame=ttk.Frame(self, borderwidth=5)
+        frame=ttk.Frame(self.left, borderwidth=5)
         frame.pack(expand='yes', fill='both')
         frame1=ttk.Frame(frame)
         frame1.pack(side='top', expand='yes', fill='both')
@@ -275,16 +304,19 @@ class TextEditor(tkinter.Frame):
 
         self.micState = True # Check mic State
 
+        space=tkinter.Label(self.left, text=' ',width=70)
+        space.pack(expand='no', fill=None, side='left')
+
         # Pause/Resume Button
-        space1=tkinter.Label(self, text=' ',width=7)
+        space1=tkinter.Label(self.left, text=' ',width=7)
         space1.pack(expand='no', fill=None, side='right')
-        self.pauseResumeButton=tkinter.Button(self, text='Pause',padx=10,pady=6,command=self.switch_state)
+        self.pauseResumeButton=tkinter.Button(self.left, text='Pause',padx=10,pady=6,command=self.switch_state)
         self.pauseResumeButton.pack(expand='no', fill=None, side='right')
 
         # Stop Coding Button
-        space2=tkinter.Label(self, text=' ',width=7)
+        space2=tkinter.Label(self.left, text=' ',width=7)
         space2.pack(expand='no', fill=None, side='right')
-        stopCodingButton=tkinter.Button(self, text='STOP CODING',padx=10,pady=6,command=self.stopCoding)
+        stopCodingButton=tkinter.Button(self.left, text='STOP CODING',padx=10,pady=6,command=self.stopCoding)
         stopCodingButton.pack(expand='no', fill=None, side='right')
 
         # Adding Syntax Highlighting Feature
@@ -293,18 +325,168 @@ class TextEditor(tkinter.Frame):
         # Binding Triggers
         self.bind_all('<Any-KeyPress>',self.trigger)
 
+        self.right=tkinter.Frame(self,width=350,background='white')
+        self.right.pack(side='right',fill='both',expand=1)
+
+        self.search_frame = tkinter.Frame(self.right)
+        self.search_frame.pack(side='top', fill='x',expand='no')
+
+        self.msg_fieldText = tkinter.StringVar()
+        self.msg_fieldText.set('')
+        self.msg_inputField = tkinter.Entry(self.search_frame,font=('Helvetica','14'),width=33,textvariable=self.msg_fieldText)
+
+        self.mic_listening = False
+        self.display_frame = ""
+
+        photo = tkinter.PhotoImage(file = "images/microphone.png")
+        mic_button = tkinter.Button(self.search_frame,text='Speak',width=30,height=25,image=photo,command=self.mic_click)
+        mic_button.image = photo
+        mic_button.pack(side='left',fill=None,expand='no')
+        self.msg_inputField.pack(side='left',fill=None)
+
+        search_photo = tkinter.PhotoImage(file = "images/search.png")
+        search_button = tkinter.Button(self.search_frame,text='Send',height=25,width=30,image=search_photo,command=self.search_click)
+        search_button.image = search_photo
+        search_button.pack(side='left')
+
+        self.sections = []
+
+    def mic_click(self):
+        if self.mic_listening == False:
+            self.mic_listening = True
+            self.controller.codethread.pause()
+            self.add_msg_frame(1)
+            self.display_frame.update()
+            playsound.playsound('audio_files/tone.mp3',True)
+
+            msg = speech2Text() # Get message from speech detection module
+            if msg == -1:
+                self.add_msg_frame(-1)
+            else:
+                self.create_suggestions_frame(command=msg)
+
+            self.mic_listening = False
+            self.controller.codethread.resume()
+
+    def search_click(self):
+        if self.mic_listening == False:
+            msg = self.msg_fieldText.get() # Get message from Input Field
+
+            # Modify the recieved message
+            words = msg.split(' ')
+            i = 0
+            while i < len(words):
+                if words[i] == '':
+                    words.remove(words[i])
+                    i -= 1
+                i += 1
+            msg = ' '.join(words)
+            if len(msg) > 0:
+                self.create_suggestions_frame(command=msg)
+
+    def add_msg_frame(self,typeofmsg):
+
+        if type(self.display_frame) is tkinter.Frame:
+            self.display_frame.destroy()
+
+        self.display_frame = tkinter.Frame(self.right)
+        self.display_frame.pack(side='top',fill=BOTH,expand=1)
+
+        self.canvas = tkinter.Canvas(self.display_frame)
+        self.canvas.pack(side='left',fill=tkinter.BOTH,expand=1)
+
+        self.scrollbar = ttk.Scrollbar(self.display_frame,orient=tkinter.VERTICAL,command=self.canvas.yview)
+        self.scrollbar.pack(side='right',fill=tkinter.Y)
+
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.canvas.bind('<Configure>',lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        self.sec_frame = tkinter.Frame(self.canvas)
+        self.canvas.create_window((0,0),window=self.sec_frame,anchor='nw',width=385)
+
+        if typeofmsg == 1:
+            self.htmlsnippet = '''
+                <div style="background-color:white;">
+                <h5 style="color: blue">I'm Listening...</h5>
+                <p>speak after the sound</p>
+                </div>
+            '''
+        else:
+            self.htmlsnippet = '''
+                <div style="background-color:white;">
+                <h5 style="color: red">Error</h5>
+                <p>Didn't understand, Please try again</p>
+                </div>
+            '''
+
+        self.msg_display = HTMLLabel(self.sec_frame,html=self.htmlsnippet,height=6,background='white')
+        self.msg_display.pack()
+
+    def search_thread(self,command):
+
+        self.snippets = search_web(command)
+
+        if type(self.display_frame) is tkinter.Frame:
+            self.display_frame.destroy()
+
+        self.display_frame = tkinter.Frame(self.right)
+        self.display_frame.pack(side='top',fill=BOTH,expand=1)
+
+        self.canvas = tkinter.Canvas(self.display_frame)
+        self.canvas.pack(side='left',fill=tkinter.BOTH,expand=1)
+
+        self.scrollbar = ttk.Scrollbar(self.display_frame,orient=tkinter.VERTICAL,command=self.canvas.yview)
+        self.scrollbar.pack(side='right',fill=tkinter.Y)
+
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.canvas.bind('<Configure>',lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        self.sec_frame = tkinter.Frame(self.canvas)
+        self.canvas.create_window((0,0),window=self.sec_frame,anchor='nw',width=385)
+
+        self.htmlsnippet = f'''
+            <div style="background-color:white;">
+            <h5 style="color: green">Recieved Command</h5>
+            <p>{command}</p>
+            </div>
+        '''
+
+        self.msg_display = HTMLLabel(self.sec_frame,html=self.htmlsnippet,height=6,background='white')
+        self.msg_display.pack()
+
+        self.separator = Label(self.sec_frame,text='--------------------------------------------------------------')
+        self.separator.pack(side='top',fill='x',expand='no')
+
+        for i in range(len(self.snippets)):
+            if len(self.snippets[i][2]) > 0:
+                frami = Section(self.sec_frame,self.snippets[i][2],self.snippets[i][0],self.snippets[i][1])
+                frami.pack(side='top',fill='x',expand=1)
+                self.sections.append(frami)
+
+        self.controller.geometry("1361x600")
+        self.controller.update()
+        self.controller.geometry("1360x600")
+        self.controller.update()
+    
+    def create_suggestions_frame(self,command):
+
+        self.searching_thread = threading.Thread(target = self.search_thread, args =(command, ))
+        self.searching_thread.setDaemon(True)
+        self.searching_thread.start()
+
     # [ Function to Chnage State of Pause/Resume Button and call Pause/Resume Functions ]
     def switch_state(self):
-        if self.micState:
-            self.pauseResumeButton.configure(text='Resume')
-            self.update()
-            self.controller.codethread.pause()
-            self.micState = False
-        else:
-            self.pauseResumeButton.configure(text='Pause')
-            self.update()
-            self.controller.codethread.resume()
-            self.micState = True
+        if self.mic_listening == False:
+            if self.micState:
+                self.pauseResumeButton.configure(text='Resume')
+                self.update()
+                self.controller.codethread.pause()
+                self.micState = False
+            else:
+                self.pauseResumeButton.configure(text='Pause')
+                self.update()
+                self.controller.codethread.resume()
+                self.micState = True
 
     # [ Function to save textbox text as a python file ]
     def Save_as(self):

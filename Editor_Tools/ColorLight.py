@@ -1,19 +1,13 @@
 import builtins,re,keyword
 
-
 def any(name, alternates):
     "Return a named group pattern matching list of alternates."
     return "(?P<%s>" % name + "|".join(alternates) + ")"
 def ty():
     kw = r"\b" + any("KEYWORD", keyword.kwlist) + r"\b"
-    # print(kw)
     builtinlist = [str(name) for name in dir(builtins)
                                         if not name.startswith('_')]
-    # We don't know whether "print" is a function or a keyword,
-    # so we always treat is as a keyword (the most common case).
     builtinlist.remove('print')
-    # self.file = file("file") :
-    # 1st 'file' colorized normal, 2nd as builtin, 3rd as string
     builtin = r"([^.'\"\\#]\b|^)" + any("BUILTIN", builtinlist) + r"\b"
     comment = any("COMMENT", [r"#[^\n]*"])
     stringprefix = r"(\br|u|ur|R|U|UR|Ur|uR|b|B|br|Br|bR|BR)?"
@@ -52,8 +46,6 @@ def coordinate(pattern, string,txt):
     if len(lcolsplitlines)!=0:
         lcolsplitlines=lcolsplitlines[len(lcolsplitlines)-1]
     lcol=len(lcolsplitlines)# Ending Column
-    #txt.tag_add('red','{}.{}'.format(srow, scol),'{}.{}'.format(lrow, lcol))
-    #txt.tag_configure('red',foreground='red')
     return '{}.{}'.format(srow, scol),'{}.{}'.format(lrow, lcol)#, (lrow, lcol)
 # Color Configuration
 
@@ -68,9 +60,7 @@ def check(k={}):
     	return 'keyword','orange'
     else:
     	return 'ss','NILL'
-#    print _coordinate(start,end,c,txt)
 txtfilter=re.compile(ty(),re.S)
-#idprog = re.compile(r"\s+(\w+)", re.S)
 class ColorLight:
     def __init__(self, txtbox=None):
         self.txt=txtbox
@@ -90,20 +80,3 @@ class ColorLight:
                 #print ind1, ind2
                 self.txt.tag_add(tagtype,ind1, ind2)
                 self.txt.tag_config(tagtype,foreground=color)
-                #Tkinter.Text.tag_configure
-#        for i in idprog.finditer(val):
-#            start=i.start()
-#            end=i.end()-1
-#            ind1,ind2=_coordinate(start,end,val)
-#            self.txt.tag_add('BLUE',ind1, ind2)
-#            self.txt.tag_config("BLUE",foreground='grey')
-#            #Tkinter.Text.tag_configure
-
-"""
-root=Tkinter.Tk()
-txt=Tkinter.Text(root)
-txt.pack(expand='yes')
-store=ColorLight(txtbox=txt)
-Tkinter.Button(root, text='Click me', command=lambda:store.trigger()).pack()
-root.mainloop()
-"""

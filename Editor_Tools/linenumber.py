@@ -1,6 +1,5 @@
 import tkinter as tk 
 
-
 class LineNumberCanvas(tk.Canvas):
     def __init__(self, *args, **kwargs):
         tk.Canvas.__init__(self, *args, **kwargs)
@@ -43,10 +42,6 @@ class LineNumberCanvas(tk.Canvas):
                 self.breakpoints.append(linenum)
             self.re_render()
             
-            
-
-
-
 class Text(tk.Text):
      def __init__(self, *args, **kwargs):
         tk.Text.__init__(self, *args, **kwargs)
@@ -77,8 +72,6 @@ class Text(tk.Text):
             rename {widget} new
             interp alias {{}} ::{widget} {{}} widget_interceptor {widget} new
         '''.format(widget=str(self)))
-
-
 class EditorWindow(tk.Frame):
     def __init__(self, *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
@@ -89,9 +82,6 @@ class EditorWindow(tk.Frame):
 
         self.linenumbers = LineNumberCanvas(self, width=40)
         self.linenumbers.connect(self.text)
-
- 
-
         
         self.scrollbar.pack(side="right", fill="y")
         self.linenumbers.pack(side="left", fill="y")
@@ -103,15 +93,5 @@ class EditorWindow(tk.Frame):
         self.linenumbers.bind('<Button-1>',self.linenumbers.get_breakpoint_number)
         self.text.pack(side="right", fill="both", expand=True)
 
-
-
-
     def changed(self, event):
         self.linenumbers.re_render()
-
-
-"""root = tk.Tk()
-l = EditorWindow()
-l.pack()
-root.mainloop()
-"""

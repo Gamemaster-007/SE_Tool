@@ -10,7 +10,6 @@ class featured_text:
         self.scrollstart()
         self.line_count()
 
-
         # [ This Function is For Editing Scrolling Bar with Text Widget ]
     def scrollstart(self):
         # scroll Bar x For width
@@ -30,17 +29,7 @@ class featured_text:
         self.linenumbers.connect(self.textbox)
         self.linenumbers.pack(side="left", fill="y")
         self.linenumbers.bind('<Button-1>',self.linenumbers.get_breakpoint_number)
-        #self.content_box.bind('<Any-KeyPress>',self.changed)
-        #self.root.bind_all('<Any-KeyPress>',self.changed)
         self.textbox.pack(expand='yes', fill='both',side='right')
 
-    
     def changed(self, event=None):
         self.linenumbers.re_render()
-"""     
-root=Tkinter.Tk()
-text=Tkinter.Text(root, wrap='none', undo=1)
-text.pack(expand='yes',fill='both')
-text.pack(expand='yes',fill='both')
-featured_text(root=root, textbox=text)
-root.mainloop()"""
