@@ -16,46 +16,46 @@ VATC - tool developed from a programmers point of view. It helps programmers by 
 ## Installation
 
 ### MacOS
-1. clone repo
+clone repo
 ```
 git clone https://github.com/Gamemaster-007/VATC
 ```
-2. Activate Virtual environment
+Activate Virtual environment
 ```
 cd VATC/
 source venv/bin/activate
 ```
-3. Install dependencies
+Install dependencies
 ```
 pip install requirements.txt
 ```
 
 ### Ubuntu
-1. clone repo
+clone repo
 ```
 git clone https://github.com/Gamemaster-007/VATC
 ```
-2. Activate Virtual environment
+Activate Virtual environment
 ```
 cd VATC/
 source venv/bin/activate
 ```
-3. Install dependencies
+Install dependencies
 ```
 pip install requirements.txt
 ```
 
 ### Windows
-1. clone repo
+clone repo
 ```
 git clone https://github.com/Gamemaster-007/VATC
 ```
-2. Activate Virtual environment
+Activate Virtual environment
 ```
 cd VATC/
 ./venv/Scripts/activate
 ```
-3. Install dependencies
+Install dependencies
 ```
 pip install requirements.txt
 ```
