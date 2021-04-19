@@ -5,9 +5,9 @@ VATC - tool developed from a programmers point of view. It helps programmers by 
 
 ## Features
 
-```Assistant Mode``` - this mode can be used to browse your queries and switch between different modes.
-```Dictation Mode``` - this mode can be used to prepare documentation for a program or project using your voice.
-```Coding Mode``` - this mode can be used to write code, edit pieces of code using voice, search for code snippets and find useful libraries for your program. 
+- ```Assistant Mode``` - this mode can be used to browse your queries and switch between different modes.
+- ```Dictation Mode``` - this mode can be used to prepare documentation for a program or project using your voice.
+- ```Coding Mode``` - this mode can be used to write code, edit pieces of code using voice, search for code snippets and find useful libraries for your program. 
 
 ## Installing
 ```
