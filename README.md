@@ -1,4 +1,13 @@
-# SE_Tool
+# VATC
+> Virtual Assistant to **TYPE** and **CODE**
+
+VATC - tool developed from a programmers point of view. It helps programmers by writing and editing small pieces of code, searching for code snippets, libraries and helping in documentation.
+
+## Features
+
+```Assistant Mode``` - this mode can be used to browse your queries and switch between different modes.
+```Dictation Mode``` - this mode can be used to prepare documentation for a program or project using your voice.
+```Coding Mode``` - this mode can be used to write code, edit pieces of code using voice, search for code snippets and find useful libraries for your program. 
 
 ## Installing
 ```
