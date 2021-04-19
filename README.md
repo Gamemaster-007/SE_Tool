@@ -60,15 +60,27 @@ Install dependencies
 pip install requirements.txt
 ```
 
-## Usage
+### Usage
 
-### Run Tool
+#### Run Tool
 ```
 cd VATC/
 python app.py
 ```
 
-## Scope
+#### Design
+![Design](/Report/SE2.png)
+
+### User Interface
+
+#### Assistant Window
+![Assistant Window](/images/Assistant_1.gif)
+
+#### Dictation Mode
+![Dictation Mode](/images/Assistant_2.png)
+
+#### Editor
+![Coding Mode](/images/Editor.gif)
 
 ### Functionalities
 
