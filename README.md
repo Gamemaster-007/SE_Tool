@@ -1,5 +1,5 @@
 # VATC
-> Virtual Assistant to **TYPE** and **CODE**
+> **V**irtual **A**ssistant to **T**ype and **C**ode
 
 VATC - tool developed from a programmers point of view. It helps programmers by writing and editing small pieces of code, searching for code snippets, libraries and helping in documentation.</br>
 </br>
