@@ -60,7 +60,6 @@ Install dependencies
 pip install requirements.txt
 ```
 
-
 ## Usage
 
 ### Run Tool
@@ -69,6 +68,44 @@ cd VATC/
 python app.py
 ```
 
+## Scope
 
-## Dependencies
+### Functionalities
 
+1. **Assistant**
+  - This is the main window of the tool that appears when user executes the tool.
+  - This window can be used to switch between different modes and browse your queries.
+  - [Documentation](/Assistant.md)
+ 
+2. **Dictation Mode**
+  - This mode can be used to type text using your voice.
+  - It can be used to take notes, prepare documentations and other typing activities.
+  - [Documentation](/Dictation.md)
+ 
+3. **Coding Mode**
+  - This mode activates a Text Editor where user can write his program.
+  - This mode also activates a voice based assistant in background that helps the programmer by editing and programming small pieces of code to make programmer task easier.
+  - The Editor window contains a section where user can input his quries and get relevent libraries and code snippets.
+  - In the Future builds the Editor will be developed to have functionalities like code suggestion, and a console where user can run suggested code snippets and other small codes.
+  - [Documentation](/Coding_mode.md)
+
+
+## Technologies
+
+- [Tkinter](https://www.python.org) - Python based UI development framework.
+- [Speech Recognition API](https://pypi.org/project/SpeechRecognition/) - API developed by Google to convert Speech into Text.
+- [Ktrain](https://pypi.org/project/ktrain/) - Framework to develop Machine Learning models
+- [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) - Python library used to scrape web pages and extract information.
+
+## Contributors
+
+- [Jawahar Nathani](https://github.com/Gamemaster-007)
+- [Sagar Reddy P](https://github.com/sagar345)
+
+## Acknowledgments
+
+- Dr. Shridhar Chimalakonda
+- Mr. Sriram
+
+
+ 
