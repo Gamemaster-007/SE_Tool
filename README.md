@@ -16,7 +16,7 @@ VATC - tool developed from a programmers point of view. It helps programmers by 
 ## Installation
 
 ### MacOS
-clone repo
+Clone repo
 ```
 git clone https://github.com/Gamemaster-007/VATC
 ```
@@ -31,7 +31,7 @@ pip install requirements.txt
 ```
 
 ### Ubuntu
-clone repo
+Clone repo
 ```
 git clone https://github.com/Gamemaster-007/VATC
 ```
@@ -46,7 +46,7 @@ pip install requirements.txt
 ```
 
 ### Windows
-clone repo
+Clone repo
 ```
 git clone https://github.com/Gamemaster-007/VATC
 ```
