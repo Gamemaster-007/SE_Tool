@@ -3,10 +3,13 @@ from bs4 import BeautifulSoup as bs
 from googlesearch import search
 from ktrain import load_predictor
 is_predictor = 1
+print("Loading BERT Model...")
 try:
     predictor = load_predictor('model/bert_model')
+    print("Model Loded Successfully")
 except:
     is_precictor = 0
+    print("Model not found")
 
 def get_stackoverflow_codes(link):
     res = requests.get(link)

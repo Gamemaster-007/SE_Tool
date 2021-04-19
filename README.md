@@ -75,19 +75,16 @@ python app.py
 1. **Assistant**
   - This is the main window of the tool that appears when user executes the tool.
   - This window can be used to switch between different modes and browse your queries.
-  - [Documentation](/Assistant.md)
  
 2. **Dictation Mode**
   - This mode can be used to type text using your voice.
   - It can be used to take notes, prepare documentations and other typing activities.
-  - [Documentation](/Dictation.md)
  
 3. **Coding Mode**
   - This mode activates a Text Editor where user can write his program.
   - This mode also activates a voice based assistant in background that helps the programmer by editing and programming small pieces of code to make programmer task easier.
   - The Editor window contains a section where user can input his quries and get relevent libraries and code snippets.
   - In the Future builds the Editor will be developed to have functionalities like code suggestion, and a console where user can run suggested code snippets and other small codes.
-  - [Documentation](/Coding_mode.md)
 
 
 ## Technologies

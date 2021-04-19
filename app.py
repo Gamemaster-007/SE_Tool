@@ -1,4 +1,5 @@
 # Import Required Libraries and Functions
+print("Importing All Required Modules...")
 import sys
 import tkinter
 import playsound
@@ -17,6 +18,7 @@ import pyperclip
 from tkhtmlview import HTMLLabel
 from get_codes import search_web
 import threading
+import webbrowser
 
 # Main App Class
 class App(tkinter.Tk):
@@ -76,6 +78,8 @@ class App(tkinter.Tk):
 
 # Assistant Class
 class Assistant(tkinter.Frame):
+    global aiml_kernel
+
     def __init__(self,parent,controller):
 
         # Creating Frame
@@ -193,7 +197,10 @@ class Assistant(tkinter.Frame):
             sys.exit()
         else:
             self.addMsg(1,0,msg)
-            self.addMsg(0,0,"Sorry, I don't have permission to do that yet. But may expect in R2")
+            self.addMsg(0,0,"Opening WEB BROWSER")
+            msg = msg.replace(' ','+')
+            url = "https://www.google.com/search?q="+msg
+            webbrowser.open(url)
 
     # Function to Detect Speech
     def speak(self):
@@ -333,7 +340,7 @@ class TextEditor(tkinter.Frame):
 
         self.msg_fieldText = tkinter.StringVar()
         self.msg_fieldText.set('')
-        self.msg_inputField = tkinter.Entry(self.search_frame,font=('Helvetica','14'),width=33,textvariable=self.msg_fieldText)
+        self.msg_inputField = tkinter.Entry(self.search_frame,font=('Helvetica','14'),width=40,textvariable=self.msg_fieldText)
 
         self.mic_listening = False
         self.display_frame = ""
