@@ -10,5 +10,5 @@
 - ```Mode: typing  | State: processing``` - When the Tool is Typing the recieved command.
 - ```Error: Didn't understand, Please try again``` - Error Message.
 
-#### commands
-<img src="/images/Documentation_Images/Dictation_Commands.png" height="500">
+### commands
+<img src="/images/Documentation_Images/Dictation_Commands.png" height="300">
