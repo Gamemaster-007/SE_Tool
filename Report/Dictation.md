@@ -16,4 +16,8 @@
 <img src="/images/Documentation_Images/Dictation_Listening.png" height="500">
 
 ### Commands
+
+- All the User commands(excluding commands from below table) will be typed with some basic preprocessing.
+
+> These commands are used to perform basic actions that are used while typing.
 <img src="/images/Documentation_Images/Dictation_Commands.png" height="300">
