@@ -74,10 +74,10 @@ python app.py
 ### User Interface
 
 #### Assistant Window
-![Assistant Window](/images/Assistant_1.gif)
+<img src="/images/Assistant_1.gif" height="500">
 
 #### Dictation Mode
-![Dictation Mode](/images/Assistant_2.png)
+<img src="/images/Assistant_2.png" height="500">
 
 #### Editor
 ![Editor](/images/Editor.gif)
