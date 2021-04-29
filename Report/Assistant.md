@@ -18,4 +18,4 @@
 - ``` start coding ``` to activate [Editor Mode](Editor.md).
 - ``` close ``` to exit the _Tool_.
 
-<img src="/images/Documentation_Images/Assistant.png" height="400">
+<img src="/images/Documentation_Images/Assistant.png" height="500">
