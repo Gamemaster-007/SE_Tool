@@ -1,9 +1,11 @@
+# Import Required Modules
 import requests
 from bs4 import BeautifulSoup as bs
 from googlesearch import search
 from ktrain import load_predictor
 is_predictor = 1
 print("Loading BERT Model...")
+# Load BERT Model
 try:
     predictor = load_predictor('model/bert_model')
     print("Model Loded Successfully")
@@ -11,15 +13,16 @@ except:
     is_precictor = 0
     print("Model not found")
 
+# [ Function to get Code snippets from StackOverFlow ]
 def get_stackoverflow_codes(link):
-    res = requests.get(link)
+    res = requests.get(link)    # get HTML template
     soup = bs(res.text,"html.parser")
     alla = soup.select(".answer")
 
+    # Function to get codes
     def get_answers(ans):
         fin_ans = []
         for i in range(len(ans)):
-            # user = ans[i].select(".mt24")[0].find_all("div",attrs={"itemprop":"author"})[0].select("a")[0].text.strip()
             user = ""
             code_section = ans[i].select(".js-post-body")[0]
             pres = code_section.select("pre")
@@ -46,6 +49,7 @@ def get_stackoverflow_codes(link):
     alla = get_answers(alla)
     return alla
 
+# [ Function to get Code snippets from GeeksForGeeks ]
 def get_geeksforgeeks_codes(link):
     res = requests.get(link)
     soup = bs(res.text,"html.parser")
@@ -76,24 +80,26 @@ def get_geeksforgeeks_codes(link):
         codes.append(code)
     return codes
 
+# [ Function to search links for search query ]
 def search_web(query):
     global is_predictor
 
     gfg_link = ""
-    for j in search(("site:geeksforgeeks.org "+query+" in python"), num=1, stop=1):
+    for j in search(("site:geeksforgeeks.org "+query+" in python"), num=1, stop=1): # get GeeksForGeeks links
         gfg_link = j
     gfg_codes = get_geeksforgeeks_codes(gfg_link)
     sof_link = ""
-    for j in search(("site:stackoverflow.com "+query+" in python"), num=1, stop=1):
+    for j in search(("site:stackoverflow.com "+query+" in python"), num=1, stop=1): # get StackOverFlow links
         sof_link = j
     sof_codes = get_stackoverflow_codes(sof_link)
 
+    # Categorise these posts using BERT Model
     for i in range(len(sof_codes)):
         votes = sof_codes[i][2]
         com_score = 0
         for j in range(len(sof_codes[i][3])):
             com_sent = ''
-            if is_predictor == 1:
+            if is_predictor == 1:   # check sentiment of comments
                 com_sent = predictor.predict(sof_codes[i][3][j][1])
             else:
                 com_sent = 'pos'
@@ -101,12 +107,12 @@ def search_web(query):
                 com_score += (-1*(sof_codes[i][3][j][2]+1))
             else:
                 com_score += (sof_codes[i][3][j][2] + 1)
-        score = votes + (com_score/4)
+        score = votes + (com_score/4)   # Post score
         sof_codes[i].append(score)
     sof_codes.sort(key = lambda x: x[4])
 
+    #   Prepare final codes snippets
     fin_codes = []
-    
     flag = len(sof_codes)
     for i in range(len(sof_codes)-1,-1,-1):
         if sof_codes[i][4] > 10:

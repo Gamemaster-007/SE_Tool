@@ -1,8 +1,10 @@
 # Import Required Libraries and Functions
 import keyboard
 
+# convert numbers from words to integers
 str_num = {'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,'ten':10}
 
+# [ Function to type recieved text ]
 def typeText(text):
 
     command = -1
@@ -48,8 +50,9 @@ def typeText(text):
             for i in range(words_len-2):
                 comment += words[i]+' '
     
+    # Perform relevent actions based on recieved command
     if command == -1:
-        keyboard.write(text[0].upper()+text[1:]+' ')
+        keyboard.write(text+' ')
     elif command == 0:
         keyboard.write(comment)
         keyboard.press_and_release('enter')

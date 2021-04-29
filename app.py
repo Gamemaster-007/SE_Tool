@@ -29,7 +29,7 @@ class App(tkinter.Tk):
         # self.attributes("-topmost",True)
 
         # Modify Title of Window
-        self.title("F.R.I.D.A.Y")
+        self.title("V.A.T.C")
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic") # Styling Window Title
 
         # Creating Container to Stack Frames [ Assistant , Text Editor ]
@@ -56,7 +56,7 @@ class App(tkinter.Tk):
         
         self.show_frame("Assistant") # Initially Show Assistant Frame
         self.update() # Update Window GUI
-        dictate('This is FRIDAY, your personal voice assistant.') # Dictate Start Message
+        dictate('This is VATC, your personal Virtual Assistant to Type and Code.') # Dictate Start Message
 
     # Function to Switch between Frames
     def show_frame(self, page_name):
@@ -243,6 +243,7 @@ class Assistant(tkinter.Frame):
             self.msg_fieldText.set("")
             self.msg_inputField.config(state=NORMAL)
 
+# Frame to display Code Snippets.
 class Section(Frame):
     def __init__(self,parent,snippet,source,link):
         Frame.__init__(self,parent)
@@ -263,10 +264,10 @@ class Section(Frame):
         self.code_syntax_color=ColorLight.ColorLight(txtbox=self.code)
         self.code_syntax_color.trigger()
 
-        self.copy = Button(self,text='COPY',command=self.pr)
+        self.copy = Button(self,text='COPY',command=self.copy_code)
         self.copy.pack(side='top')
     
-    def pr(self):
+    def copy_code(self):
         pyperclip.copy(self.snippet)
 
 # Text Editor Class
@@ -332,19 +333,22 @@ class TextEditor(tkinter.Frame):
         # Binding Triggers
         self.bind_all('<Any-KeyPress>',self.trigger)
 
+        # Right Frame to maintain Code Snippets suggestion section.
         self.right=tkinter.Frame(self,width=350,background='white')
         self.right.pack(side='right',fill='both',expand=1)
 
+        # Frame to display MIC, Input Field, Search Button.
         self.search_frame = tkinter.Frame(self.right)
         self.search_frame.pack(side='top', fill='x',expand='no')
 
-        self.msg_fieldText = tkinter.StringVar()
+        self.msg_fieldText = tkinter.StringVar()    # Message Variable.
         self.msg_fieldText.set('')
         self.msg_inputField = tkinter.Entry(self.search_frame,font=('Helvetica','14'),width=40,textvariable=self.msg_fieldText)
 
-        self.mic_listening = False
+        self.mic_listening = False  # State of Search Frame MIC
         self.display_frame = ""
 
+        #++++++++++++++++++++++++ [Search Section] ++++++++++++++++++++++++++++++++++++++++++++++
         photo = tkinter.PhotoImage(file = "images/microphone.png")
         mic_button = tkinter.Button(self.search_frame,text='Speak',width=30,height=25,image=photo,command=self.mic_click)
         mic_button.image = photo
@@ -358,10 +362,11 @@ class TextEditor(tkinter.Frame):
 
         self.sections = []
 
+    # Function for MIC actions
     def mic_click(self):
         if self.mic_listening == False:
             self.mic_listening = True
-            self.controller.codethread.pause()
+            self.controller.codethread.pause()  # Pause Current Assistant Thread.
             self.add_msg_frame(1)
             self.display_frame.update()
             playsound.playsound('audio_files/tone.mp3',True)
@@ -370,11 +375,12 @@ class TextEditor(tkinter.Frame):
             if msg == -1:
                 self.add_msg_frame(-1)
             else:
-                self.create_suggestions_frame(command=msg)
+                self.create_suggestions_frame(command=msg)  # Send recieved message to code searching module.
 
             self.mic_listening = False
-            self.controller.codethread.resume()
+            self.controller.codethread.resume() # Resume Assistant Thread.
 
+    # Function for Search Button actions.
     def search_click(self):
         if self.mic_listening == False:
             msg = self.msg_fieldText.get() # Get message from Input Field
@@ -391,7 +397,50 @@ class TextEditor(tkinter.Frame):
             if len(msg) > 0:
                 self.create_suggestions_frame(command=msg)
 
+    # Function to add State of MIC
     def add_msg_frame(self,typeofmsg):
+
+        # Destroy the existing Code Display Frame.
+        if type(self.display_frame) is tkinter.Frame:
+            self.display_frame.destroy()
+
+        #++++++++++++++++++++++++ [New Code Display Section] ++++++++++++++++++++++++++++++++++++++++++++++
+        self.display_frame = tkinter.Frame(self.right)
+        self.display_frame.pack(side='top',fill=BOTH,expand=1)
+
+        self.canvas = tkinter.Canvas(self.display_frame)
+        self.canvas.pack(side='left',fill=tkinter.BOTH,expand=1)
+
+        self.scrollbar = ttk.Scrollbar(self.display_frame,orient=tkinter.VERTICAL,command=self.canvas.yview)
+        self.scrollbar.pack(side='right',fill=tkinter.Y)
+
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.canvas.bind('<Configure>',lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        self.sec_frame = tkinter.Frame(self.canvas)
+        self.canvas.create_window((0,0),window=self.sec_frame,anchor='nw',width=385)
+
+        # Set MIC Status.
+        if typeofmsg == 1:
+            self.htmlsnippet = '''
+                <div style="background-color:white;">
+                <h5 style="color: blue">I'm Listening...</h5>
+                <p>speak after the sound</p>
+                </div>
+            '''         # HTML div to display MIC status.
+        else:
+            self.htmlsnippet = '''
+                <div style="background-color:white;">
+                <h5 style="color: red">Error</h5>
+                <p>Didn't understand, Please try again</p>
+                </div>
+            '''      # HTML div to display Error Message.
+
+        self.msg_display = HTMLLabel(self.sec_frame,html=self.htmlsnippet,height=6,background='white')  # Display Status of Tool and MIC
+        self.msg_display.pack()
+
+    # Function to Display Searching Message.
+    def display_searching(self):
 
         if type(self.display_frame) is tkinter.Frame:
             self.display_frame.destroy()
@@ -411,31 +460,24 @@ class TextEditor(tkinter.Frame):
         self.sec_frame = tkinter.Frame(self.canvas)
         self.canvas.create_window((0,0),window=self.sec_frame,anchor='nw',width=385)
 
-        if typeofmsg == 1:
-            self.htmlsnippet = '''
-                <div style="background-color:white;">
-                <h5 style="color: blue">I'm Listening...</h5>
-                <p>speak after the sound</p>
-                </div>
-            '''
-        else:
-            self.htmlsnippet = '''
-                <div style="background-color:white;">
-                <h5 style="color: red">Error</h5>
-                <p>Didn't understand, Please try again</p>
-                </div>
-            '''
+        self.htmlsnippet = '''
+            <div style="background-color:white;">
+            <h5 style="color: orange">Searching for top results ...</h5>
+            </div>
+            '''     # HTML template for Searching Message.
 
         self.msg_display = HTMLLabel(self.sec_frame,html=self.htmlsnippet,height=6,background='white')
-        self.msg_display.pack()
+        self.msg_display.pack() 
 
+    #++++++++++++++++++++++++ [Code Suggestion Thread] ++++++++++++++++++++++++++++++++++++++++++++++
+    # Function to search for Code Snippets and Displaying them.
     def search_thread(self,command):
 
-        self.snippets = search_web(command)
+        self.display_searching()    # Display Searching Message.
+        self.snippets = search_web(command) # Get Code Snippets
+        self.display_frame.destroy()    # destroy existing display frame.
 
-        if type(self.display_frame) is tkinter.Frame:
-            self.display_frame.destroy()
-
+        # create Display Frame for displaying Search Query and Code Snippets.
         self.display_frame = tkinter.Frame(self.right)
         self.display_frame.pack(side='top',fill=BOTH,expand=1)
 
@@ -456,7 +498,7 @@ class TextEditor(tkinter.Frame):
             <h5 style="color: green">Recieved Command</h5>
             <p>{command}</p>
             </div>
-        '''
+        '''     # HTML template for recieved message.
 
         self.msg_display = HTMLLabel(self.sec_frame,html=self.htmlsnippet,height=6,background='white')
         self.msg_display.pack()
@@ -464,20 +506,23 @@ class TextEditor(tkinter.Frame):
         self.separator = Label(self.sec_frame,text='--------------------------------------------------------------')
         self.separator.pack(side='top',fill='x',expand='no')
 
+        # Display Code snippets.
         for i in range(len(self.snippets)):
             if len(self.snippets[i][2]) > 0:
                 frami = Section(self.sec_frame,self.snippets[i][2],self.snippets[i][0],self.snippets[i][1])
                 frami.pack(side='top',fill='x',expand=1)
                 self.sections.append(frami)
 
+        # Update Controller.
         self.controller.geometry("1361x600")
         self.controller.update()
         self.controller.geometry("1360x600")
         self.controller.update()
     
+    # Function to find code snippets.
     def create_suggestions_frame(self,command):
 
-        self.searching_thread = threading.Thread(target = self.search_thread, args =(command, ))
+        self.searching_thread = threading.Thread(target = self.search_thread, args =(command, ))    # create thread for searching code snippets.
         self.searching_thread.setDaemon(True)
         self.searching_thread.start()
 
@@ -508,9 +553,11 @@ class TextEditor(tkinter.Frame):
     # [ Function to exit Coding State ]
     def stopCoding(self):
         self.Save_as() # Save the text as python file
-        dictate('Done Coding')
+        time.sleep(3)
         self.controller.show_frame('Assistant') # Change Frame to Assiatant Frame
         self.update() # Update Window GUI
+        #dictate('Done Coding')
+        
 
     # [Function to Update Cursor Position]
     def update_cursor_info_bar(self, event=None):

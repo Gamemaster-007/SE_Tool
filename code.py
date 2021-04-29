@@ -14,7 +14,7 @@ conversions = {'Pk inter':'tKinter','Pkinter':'tKinter','Pk inter':'tKinter','Pk
 'open flower brackets':'{', 'open flower (':'{','closed flower bracket':'}','closed flower brackets':'}',  'closed flower (':'}', 
 'power':'^', 'into':'*','percentile':'%','greater than':'>', 'less than':'<','equals to':'=','equal to':'=','double equals to':'==',
 'double equal to':'==','by':'/','colin':':','collin':':','false':'False','true':'True','length':'len',
-'zero':0,'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9}
+'zero':'0','one':'1','two':'2','three':'3','four':'4','five':'5','six':'6','seven':'7','eight':'8','nine':'9'}
 
 # +++++++++++++ [ Function to Move tk.INSERT position ] +++++++++++++
 def move_cursor(pos):

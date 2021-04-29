@@ -3,14 +3,11 @@ import speech_recognition as sr
 
 # Create Speech Recognizer
 r = sr.Recognizer()
-# r.energy_threshold = 2500 # Setting Threshold for Microphone
-# r.dynamic_energy_threshold = True
 
 # [ Function to Detect Speech and Convert it into Text ]
 def speech2Text():
     with sr.Microphone() as source:
-        # audio = r.listen(source) # Listen to Microphone audio
-        audio = r.record(source,duration=3)
+        audio = r.record(source,duration=4) # Record audio
         try:
             text = r.recognize_google(audio) # Convert Audio to Text
             return text
