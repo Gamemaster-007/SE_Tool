@@ -80,7 +80,7 @@ python app.py
 ![Dictation Mode](/images/Assistant_2.png)
 
 #### Editor
-![Coding Mode](/images/Editor.gif)
+![Editor](/images/Editor.gif)
 
 ### Functionalities
 
@@ -92,7 +92,7 @@ python app.py
   - This mode can be used to type text using your voice.
   - It can be used to take notes, prepare documentations and other typing activities.
  
-3. **Coding Mode**
+3. **Editor Mode**
   - This mode activates a Text Editor where user can write his program.
   - This mode also activates a voice based assistant in background that helps the programmer by editing and programming small pieces of code to make programmer task easier.
   - The Editor window contains a section where user can input his quries and get relevent libraries and code snippets.
